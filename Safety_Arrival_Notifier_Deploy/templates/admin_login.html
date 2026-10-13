@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login | Safety Arrival Notifier{% endblock %}
+
+{% block content %}
+
+<div class="auth-card small">
+
+    <h1>Admin Login</h1>
+
+    <p>Sign in to access the administrator dashboard.</p>
+
+    {% if error %}
+        <div class="alert error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if success %}
+        <div class="alert success">
+            {{ success }}
+        </div>
+    {% endif %}
+
+    <form method="post">
+
+        <label>
+            Admin Email
+            <input
+                type="email"
+                name="email"
+                required
+            >
+        </label>
+
+        <label>
+            Password
+            <input
+                type="password"
+                name="password"
+                required
+            >
+        </label>
+
+        <button
+            class="btn primary full"
+            type="submit"
+        >
+            Admin Login
+        </button>
+
+    </form>
+
+    <p class="center muted">
+        <a href="{{ url_for('admin_forgot_password') }}">
+            Forgot Admin Password?
+        </a>
+    </p>
+
+    <p class="center muted">
+        Regular user?
+        <a href="{{ url_for('login') }}">
+            User Login
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}

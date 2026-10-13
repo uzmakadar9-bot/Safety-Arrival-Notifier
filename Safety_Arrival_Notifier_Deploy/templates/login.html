@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Login | Safety Arrival Notifier{% endblock %}
+
+{% block content %}
+
+<div class="auth-card small">
+
+    <h1>Welcome back</h1>
+
+    {% if error %}
+        <div class="alert error">{{ error }}</div>
+    {% endif %}
+
+    {% if success %}
+        <div class="alert success">{{ success }}</div>
+    {% endif %}
+
+    <form method="post">
+
+        <label>
+            Email
+            <input
+                type="email"
+                name="email"
+                required
+            >
+        </label>
+
+        <label>
+            Password
+            <input
+                type="password"
+                name="password"
+                required
+            >
+        </label>
+
+        <button
+            class="btn primary full"
+            type="submit"
+        >
+            Login
+        </button>
+
+    </form>
+
+    <p class="center muted">
+        <a href="{{ url_for('forgot_password') }}">
+            Forgot Password?
+        </a>
+    </p>
+
+    <p class="center muted">
+        New user?
+        <a href="{{ url_for('register') }}">
+            Create an account
+        </a>
+    </p>
+
+    <p class="center muted">
+        Admin?
+        <a href="{{ url_for('admin_login') }}">
+            Admin Login
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}

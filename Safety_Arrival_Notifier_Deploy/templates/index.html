@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Home | Safety Arrival Notifier{% endblock %}
+{% block content %}
+<section class="hero">
+    <div>
+        <span class="badge">Travel Safety Project</span>
+        <h1>Know your journey status. Keep trusted people informed.</h1>
+        <p>Track a journey with GPS, estimate ETA, calculate a simple safety risk score and record important alerts.</p>
+        <div class="actions">
+            <a class="btn primary" href="{{ url_for('register') }}">Get Started</a>
+            <a class="btn secondary" href="{{ url_for('login') }}">Login</a>
+        </div>
+    </div>
+    <div class="hero-card">
+        <div class="status-dot"></div>
+        <h3>Safety status</h3>
+        <p>Normal</p>
+        <small>0–24 risk score</small>
+    </div>
+</section>
+
+<section class="grid three">
+    <article class="card"><h3>📍 GPS Tracking</h3><p>Use browser location updates to monitor the journey.</p></article>
+    <article class="card"><h3>⏱️ ETA</h3><p>Estimate remaining travel time from current distance.</p></article>
+    <article class="card"><h3>🚨 Alerts</h3><p>Record safe arrival, delay, high-risk and SOS events.</p></article>
+</section>
+
+<section class="card">
+    <h2>How the risk score works</h2>
+    <div class="risk-grid">
+        <div><b>+25</b><span>Route deviation</span></div>
+        <div><b>+20</b><span>Long stoppage</span></div>
+        <div><b>+20</b><span>Major delay</span></div>
+    </div>
+    <div class="legend">
+        <span class="normal">0–24 Normal</span>
+        <span class="attention">25–49 Attention Needed</span>
+        <span class="high">50+ High Risk</span>
+    </div>
+</section>
+{% endblock %}

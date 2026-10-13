@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Safety Arrival Notifier{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <span class="badge">Dashboard</span>
+        <h1>Hello, {{ session.get('user_name') }}</h1>
+        <p>Select your destination directly on the map. Latitude and longitude will be filled automatically.</p>
+    </div>
+
+    <button id="sosBtn" class="btn danger">🚨 SOS</button>
+</div>
+
+<div id="flash" class="alert hidden"></div>
+
+<!-- MAP SECTION -->
+<section class="card">
+
+    <h2>📍 Select destination on map</h2>
+
+    <p class="muted">
+        You do not need to calculate latitude or longitude yourself.
+        Click the destination on the map, or use your current location.
+    </p>
+
+    <div class="map-actions">
+
+        <button
+            type="button"
+            id="locateMeBtn"
+            class="btn secondary">
+            📍 Use My Current Location
+        </button>
+
+        <span id="mapMessage" class="muted">
+            Click anywhere on the map to choose a destination.
+        </span>
+
+    </div>
+
+    <div id="map"></div>
+
+</section>
+
+
+<!-- JOURNEY + STATUS -->
+<section class="grid two">
+
+    <!-- START JOURNEY -->
+    <article class="card">
+
+        <h2>Start a journey</h2>
+
+        <form id="startJourneyForm">
+
+            <label>
+                Destination name
+
+                <input
+                    id="destinationName"
+                    placeholder="College / Home / Station"
+                    required>
+            </label>
+
+
+            <div class="form-row">
+
+                <label>
+                    Latitude
+
+                    <input
+                        id="destinationLat"
+                        type="number"
+                        step="any"
+                        readonly
+                        required>
+                </label>
+
+
+                <label>
+                    Longitude
+
+                    <input
+                        id="destinationLng"
+                        type="number"
+                        step="any"
+                        readonly
+                        required>
+                </label>
+
+            </div>
+
+
+            <p class="coordinate-note">
+                🔒 Coordinates are automatically filled from your map selection.
+            </p>
+
+
+            <button
+                class="btn primary full"
+                type="submit">
+                ▶ Start Journey
+            </button>
+
+        </form>
+
+
+        <button
+            id="stopJourneyBtn"
+            class="btn secondary full top-gap"
+            disabled>
+            Stop Journey
+        </button>
+
+    </article>
+
+
+    <!-- JOURNEY STATUS -->
+    <article class="card">
+
+        <h2>Journey status</h2>
+
+
+        <div class="journey-status">
+
+            <div>
+
+                <span class="label">
+                    Journey
+                </span>
+
+                <strong id="journeyStarted">
+                    Not Started
+                </strong>
+
+            </div>
+
+
+            <div
+                class="risk-badge normal"
+                id="riskBadge">
+                Normal
+            </div>
+
+        </div>
+
+
+        <div class="metrics">
+
+            <div>
+                <span>Destination</span>
+                <b id="destinationValue">—</b>
+            </div>
+
+
+            <div>
+                <span>ETA</span>
+                <b id="etaValue">—</b>
+            </div>
+
+
+            <div>
+                <span>Distance</span>
+                <b id="distanceValue">—</b>
+            </div>
+
+
+            <div>
+                <span>Risk score</span>
+                <b id="scoreValue">0</b>
+            </div>
+
+        </div>
+
+
+        <p
+            id="gpsText"
+            class="muted">
+            GPS: waiting for journey
+        </p>
+
+    </article>
+
+</section>
+
+
+<!-- DEMO RISK CONTROLS -->
+<section class="card">
+
+    <h2>Demo risk controls</h2>
+
+    <p class="muted">
+        These buttons simulate the conditions from the project specification
+        so you can demonstrate the risk engine safely.
+    </p>
+
+
+    <div class="demo-buttons">
+
+        <button
+            class="btn secondary demo-risk"
+            data-condition="route_deviation">
+            Toggle Route Deviation (+25)
+        </button>
+
+
+        <button
+            class="btn secondary demo-risk"
+            data-condition="long_stoppage">
+            Toggle Long Stoppage (+20)
+        </button>
+
+
+        <button
+            class="btn secondary demo-risk"
+            data-condition="major_delay">
+            Toggle Major Delay (+20)
+        </button>
+
+
+        <button
+            class="btn secondary demo-risk"
+            data-condition="clear">
+            Clear Risk
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- SYSTEM FLOW -->
+<section class="card">
+
+    <h2>System flow</h2>
+
+    <div class="flow">
+
+        <span>Map</span>
+
+        <i>→</i>
+
+        <span>Destination</span>
+
+        <i>→</i>
+
+        <span>Start Journey</span>
+
+        <i>→</i>
+
+        <span>GPS</span>
+
+        <i>→</i>
+
+        <span>ETA</span>
+
+        <i>→</i>
+
+        <span>Risk</span>
+
+        <i>→</i>
+
+        <span>Alert</span>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<!-- Leaflet Map CSS -->
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+
+<!-- Leaflet Map JavaScript -->
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<!-- Start Dashboard -->
+<script>
+
+window.addEventListener("DOMContentLoaded", () => {
+
+    initDashboard();
+
+});
+
+</script>
+
+{% endblock %}

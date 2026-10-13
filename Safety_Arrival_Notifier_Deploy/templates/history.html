@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+
+{% block title %}History | Safety Arrival Notifier{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <span class="badge">History</span>
+        <h1>Journey & Alert History</h1>
+        <p>Review your journeys and safety alerts recorded by the application.</p>
+    </div>
+</div>
+
+
+<!-- =========================
+     JOURNEY HISTORY
+========================= -->
+
+<section class="card">
+
+    <div class="section-header">
+        <div>
+            <h2>Journey History</h2>
+            <p class="muted">Your recently monitored journeys.</p>
+        </div>
+    </div>
+
+    {% if journeys %}
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Destination</th>
+                    <th>Started</th>
+                    <th>Status</th>
+                    <th>Risk</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for j in journeys %}
+
+                <tr>
+
+                    <td>
+                        <strong>{{ j['destination_name'] }}</strong>
+                    </td>
+
+                    <td>
+                        {{ j['started_at']
+                            |replace('T',' ')
+                            |replace('+00:00','')
+                        }}
+                    </td>
+
+                    <td>
+
+                        {% if j['status'] == 'started' %}
+
+                            <span class="pill pill-blue">
+                                Started
+                            </span>
+
+                        {% elif j['status'] == 'arrived' %}
+
+                            <span class="pill pill-green">
+                                Arrived
+                            </span>
+
+                        {% elif j['status'] == 'stopped' %}
+
+                            <span class="pill pill-gray">
+                                Stopped
+                            </span>
+
+                        {% else %}
+
+                            <span class="pill">
+                                {{ j['status'] }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if j['risk_status'] == 'High Risk' %}
+
+                            <span class="pill pill-red">
+                                High Risk
+                            </span>
+
+                        {% elif j['risk_status'] == 'Attention Needed' %}
+
+                            <span class="pill pill-yellow">
+                                Attention Needed
+                            </span>
+
+                        {% else %}
+
+                            <span class="pill pill-green">
+                                Normal
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+                        <strong>{{ j['risk_score'] }}</strong>
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <div class="empty-icon">🧭</div>
+            <h3>No journeys yet</h3>
+            <p>Your completed and active journeys will appear here.</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =========================
+     ALERT HISTORY
+========================= -->
+
+<section class="card">
+
+    <div class="section-header">
+        <div>
+            <h2>Alerts</h2>
+            <p class="muted">
+                Safety notifications sent to your trusted contacts.
+            </p>
+        </div>
+    </div>
+
+    {% if alerts %}
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Type</th>
+                    <th>Message</th>
+                    <th>Recipient</th>
+                    <th>Time</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for a in alerts %}
+
+                <tr>
+
+                    <td>
+
+                        {% if a['alert_type'] == 'High Risk' %}
+
+                            <span class="pill pill-red">
+                                High Risk
+                            </span>
+
+                        {% elif a['alert_type'] == 'Attention Needed' %}
+
+                            <span class="pill pill-yellow">
+                                Attention Needed
+                            </span>
+
+                        {% elif a['alert_type'] == 'Safe Arrival' %}
+
+                            <span class="pill pill-green">
+                                Safe Arrival
+                            </span>
+
+                        {% elif a['alert_type'] == 'Journey Started' %}
+
+                            <span class="pill pill-blue">
+                                Journey Started
+                            </span>
+
+                        {% elif a['alert_type'] == 'Journey Stopped' %}
+
+                            <span class="pill pill-gray">
+                                Journey Stopped
+                            </span>
+
+                        {% elif a['alert_type'] == 'SOS' %}
+
+                            <span class="pill pill-red">
+                                SOS
+                            </span>
+
+                        {% elif a['alert_type'] == 'Delay' %}
+
+                            <span class="pill pill-yellow">
+                                Delay
+                            </span>
+
+                        {% else %}
+
+                            <span class="pill">
+                                {{ a['alert_type'] }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+                        {{ a['message'] }}
+                    </td>
+
+                    <td>
+                        <strong>
+                            {{ a['recipient'] or '—' }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ a['created_at']
+                            |replace('T',' ')
+                            |replace('+00:00','')
+                        }}
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <div class="empty-icon">🔔</div>
+            <h3>No alerts yet</h3>
+            <p>Safety alerts generated during your journeys will appear here.</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<style>
+
+    /* Extra styling for the history page */
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+    }
+
+    .section-header h2 {
+        margin-bottom: 5px;
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 14px;
+    }
+
+    .table-wrap table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+    }
+
+    .table-wrap th {
+        text-align: left;
+        padding: 14px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table-wrap td {
+        padding: 15px 16px;
+        border-bottom: 1px solid #eef2f7;
+        vertical-align: middle;
+    }
+
+    .table-wrap tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 11px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+        background: #e2e8f0;
+        color: #334155;
+    }
+
+    .pill-green {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .pill-yellow {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .pill-red {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .pill-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .pill-gray {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 45px 20px;
+    }
+
+    .empty-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+    }
+
+    .empty-state h3 {
+        margin: 8px 0;
+    }
+
+    .empty-state p {
+        margin: 0;
+    }
+
+</style>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+SAFETY ARRIVAL NOTIFIER
+
+USER
+ |
+ v
+HTML/CSS/JavaScript Dashboard
+ |
+ | fetch()/JSON
+ v
+FLASK BACKEND
+ |
+ +--> Authentication/Profile
+ |
+ +--> Journey API
+ |      |
+ |      +--> GPS coordinates
+ |      +--> Haversine distance
+ |      +--> ETA estimate
+ |      +--> Arrival detection
+ |
+ +--> Risk Engine
+ |      +--> Route deviation +25
+ |      +--> Long stoppage +20
+ |      +--> Major delay +20
+ |      +--> Normal / Attention / High Risk
+ |
+ +--> Alert Engine
+ |      +--> Safe Arrival
+ |      +--> Delay
+ |      +--> High Risk
+ |      +--> SOS
+ |
+ v
+SQLITE DATABASE
+ +--> users
+ +--> journeys
+ +--> journey_points
+ +--> alerts

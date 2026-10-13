@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | Safety Arrival Notifier{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <span class="badge">Profile</span>
+        <h1>Your Profile</h1>
+        <p>Manage your personal information and trusted contacts.</p>
+    </div>
+</div>
+
+<section class="card">
+
+    <h2>Personal Information</h2>
+
+    <div id="profileFlash" class="hidden"></div>
+
+    <label>
+        Name
+        <input
+            type="text"
+            id="profileName"
+            value="{{ user['name'] }}"
+            required
+        >
+    </label>
+
+    <label>
+        Email
+        <input
+            type="email"
+            id="profileEmail"
+            value="{{ user['email'] }}"
+            required
+        >
+    </label>
+
+    <label>
+        Your Phone
+        <input
+            type="text"
+            id="profilePhone"
+            value="{{ user['phone'] or '' }}"
+            maxlength="10"
+            inputmode="numeric"
+            pattern="[0-9]{10}"
+            title="Enter exactly 10 digits"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+        >
+    </label>
+
+    <hr>
+
+    <h2>Trusted Circle</h2>
+
+    <p class="muted">
+        Add up to 4 trusted contacts. Their details are used when
+        safety alerts are generated.
+    </p>
+
+    <!-- CONTACT 1 -->
+    <div class="card">
+        <h3>Trusted Contact 1</h3>
+
+        <label>
+            Name
+            <input
+                type="text"
+                id="contactName1"
+                placeholder="Enter contact name"
+            >
+        </label>
+
+        <label>
+            Phone
+            <input
+                type="text"
+                id="contactPhone1"
+                placeholder="Enter 10-digit phone number"
+                maxlength="10"
+                inputmode="numeric"
+                pattern="[0-9]{10}"
+                title="Enter exactly 10 digits"
+                oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+            >
+        </label>
+    </div>
+
+    <!-- CONTACT 2 -->
+    <div class="card">
+        <h3>Trusted Contact 2</h3>
+
+        <label>
+            Name
+            <input
+                type="text"
+                id="contactName2"
+                placeholder="Enter contact name"
+            >
+        </label>
+
+        <label>
+            Phone
+            <input
+                type="text"
+                id="contactPhone2"
+                placeholder="Enter 10-digit phone number"
+                maxlength="10"
+                inputmode="numeric"
+                pattern="[0-9]{10}"
+                title="Enter exactly 10 digits"
+                oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+            >
+        </label>
+    </div>
+
+    <!-- CONTACT 3 -->
+    <div class="card">
+        <h3>Trusted Contact 3</h3>
+
+        <label>
+            Name
+            <input
+                type="text"
+                id="contactName3"
+                placeholder="Enter contact name"
+            >
+        </label>
+
+        <label>
+            Phone
+            <input
+                type="text"
+                id="contactPhone3"
+                placeholder="Enter 10-digit phone number"
+                maxlength="10"
+                inputmode="numeric"
+                pattern="[0-9]{10}"
+                title="Enter exactly 10 digits"
+                oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+            >
+        </label>
+    </div>
+
+    <!-- CONTACT 4 -->
+    <div class="card">
+        <h3>Trusted Contact 4</h3>
+
+        <label>
+            Name
+            <input
+                type="text"
+                id="contactName4"
+                placeholder="Enter contact name"
+            >
+        </label>
+
+        <label>
+            Phone
+            <input
+                type="text"
+                id="contactPhone4"
+                placeholder="Enter 10-digit phone number"
+                maxlength="10"
+                inputmode="numeric"
+                pattern="[0-9]{10}"
+                title="Enter exactly 10 digits"
+                oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+            >
+        </label>
+    </div>
+
+    <div class="alert warning">
+        <strong>Note:</strong>
+        Phone numbers must contain exactly 10 digits.
+    </div>
+
+    <button
+        class="btn primary full"
+        type="button"
+        id="saveProfileBtn"
+    >
+        Save Profile & Contacts
+    </button>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", async function () {
+
+    const saveButton = document.getElementById("saveProfileBtn");
+
+    /*
+     * Load saved trusted contacts
+     */
+    try {
+
+        const response = await fetch("/api/contacts");
+
+        const data = await response.json();
+
+        if (data.ok && data.contacts) {
+
+            data.contacts.forEach(function (contact) {
+
+                const number = contact.contact_number;
+
+                if (number >= 1 && number <= 4) {
+
+                    document.getElementById(
+                        "contactName" + number
+                    ).value = contact.name || "";
+
+                    document.getElementById(
+                        "contactPhone" + number
+                    ).value = contact.phone || "";
+                }
+
+            });
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Unable to load contacts:",
+            error
+        );
+    }
+
+
+    /*
+     * Save profile
+     */
+    saveButton.addEventListener(
+        "click",
+        async function () {
+
+            const name =
+                document.getElementById(
+                    "profileName"
+                ).value.trim();
+
+            const email =
+                document.getElementById(
+                    "profileEmail"
+                ).value.trim();
+
+            const phone =
+                document.getElementById(
+                    "profilePhone"
+                ).value.trim();
+
+
+            /*
+             * Basic validation
+             */
+
+            if (!name) {
+
+                showMessage(
+                    "profileFlash",
+                    "Name is required.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (!email) {
+
+                showMessage(
+                    "profileFlash",
+                    "Email is required.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            /*
+             * Phone validation
+             */
+
+            if (
+                phone &&
+                !/^[0-9]{10}$/.test(phone)
+            ) {
+
+                showMessage(
+                    "profileFlash",
+                    "Your phone number must contain exactly 10 digits.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            /*
+             * Collect trusted contacts
+             */
+
+            const contacts = [];
+
+            for (
+                let i = 1;
+                i <= 4;
+                i++
+            ) {
+
+                const contactName =
+                    document.getElementById(
+                        "contactName" + i
+                    ).value.trim();
+
+                const contactPhone =
+                    document.getElementById(
+                        "contactPhone" + i
+                    ).value.trim();
+
+
+                /*
+                 * Empty contact is allowed
+                 */
+
+                if (
+                    !contactName &&
+                    !contactPhone
+                ) {
+
+                    continue;
+                }
+
+
+                /*
+                 * Both fields required
+                 */
+
+                if (
+                    !contactName ||
+                    !contactPhone
+                ) {
+
+                    showMessage(
+                        "profileFlash",
+                        "Contact " + i +
+                        " needs both name and phone number.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * 10 digit validation
+                 */
+
+                if (
+                    !/^[0-9]{10}$/.test(
+                        contactPhone
+                    )
+                ) {
+
+                    showMessage(
+                        "profileFlash",
+                        "Contact " + i +
+                        " phone number must contain exactly 10 digits.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                contacts.push({
+                    name: contactName,
+                    phone: contactPhone
+                });
+            }
+
+
+            /*
+             * Send data to Flask
+             */
+
+            saveButton.disabled = true;
+
+            try {
+
+                const response = await fetch(
+                    "/api/profile",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            contacts: contacts
+                        })
+                    }
+                );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok || !data.ok) {
+
+                    showMessage(
+                        "profileFlash",
+                        data.message ||
+                        "Unable to update profile.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                showMessage(
+                    "profileFlash",
+                    data.message ||
+                    "Profile updated successfully.",
+                    "success"
+                );
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    "profileFlash",
+                    "Something went wrong while saving your profile.",
+                    "error"
+                );
+
+            } finally {
+
+                saveButton.disabled = false;
+            }
+
+        }
+    );
+
+});
+
+</script>
+
+{% endblock %}
